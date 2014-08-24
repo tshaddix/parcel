@@ -23,7 +23,7 @@ func main() {
 	factory.Encoder(encoding.Xml())
 
 	// Decoders will be called in the order
-	// the decoders are registered
+	// they are registered
 	factory.Decoder(decoding.Query())
 	factory.Decoder(decoding.Json())
 	factory.Decoder(decoding.Xml())
@@ -47,4 +47,41 @@ func main() {
 
 	// Build web server
 }
+```
+
+## BYOD
+
+Bring your own decoder. Here is an example using [gorilla mux](https://github.com/gorilla/mux) params:
+
+```go
+
+import (
+	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/tshaddix/go-parcel"
+	"github.com/tshaddix/go-parcel/decoding"
+)
+
+type MuxParamStringer struct {}
+
+func MuxParams() *decoding.StringsDecoder {
+	return &decoding.StringDecoder{
+		new(MuxParamStringer),
+		"param",
+	}
+}
+
+func (self *MuxParamStringer) Len(r *http.Request) int {
+	return len(mux.Vars(r))
+}
+
+func (self *MuxParamStringer) Get(r *http.Request, name string) string {
+	return mux.Vars(r)[name]
+}
+
+// Later on
+
+factory.Decoders(MuxParams())
+
 ```

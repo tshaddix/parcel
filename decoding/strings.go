@@ -1,5 +1,13 @@
 package decoding
 
+import (
+	"net/http"
+	"reflect"
+	"strconv"
+
+	"github.com/tshaddix/go-parcel"
+)
+
 type (
 	Stringer interface {
 		Get(*http.Request, string) string

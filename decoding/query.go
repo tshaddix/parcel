@@ -2,10 +2,6 @@ package decoding
 
 import (
 	"net/http"
-	"reflect"
-	"strconv"
-
-	"github.com/tshaddix/go-parcel"
 )
 
 type (
@@ -35,5 +31,5 @@ func (self *QueryStringer) Get(r *http.Request, name string) string {
 }
 
 func (self *QueryDecoder) Decode(r *http.Request, candidate parcel.Candidate) (err error) {
-	self.sd.Decode(r, candidate)
+	return self.sd.Decode(r, candidate)
 }
