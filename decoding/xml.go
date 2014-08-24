@@ -1,5 +1,12 @@
 package decoding
 
+import (
+	"encoding/xml"
+	"net/http"
+
+	"github.com/tshaddix/go-parcel"
+)
+
 type (
 	XmlDecoder struct {
 	}
@@ -10,15 +17,11 @@ func Xml() *XmlDecoder {
 }
 
 func (self *XmlDecoder) Decode(r *http.Request, candidate parcel.Candidate) (err error) {
-	if r.Header.Get("Content-Type") == MimeXml {
-		err = xml.NewDecoder(r.Body).Decode(candidate)
+	ct := r.Header.Get("Content-Type")
 
-		if ute, ok := err.(*xml.UnmarshalTypeError); ok {
-			err = &RequestDecodeError{
-				FromType: ute.Value,
-				ToType:   ute.Type.Name(),
-			}
-		}
+	if ct == parcel.MimeXml || ct == parcel.MimeXml2 {
+		err = xml.NewDecoder(r.Body).Decode(candidate)
+		err = &RequestDecodeError{"", "", err}
 	}
 
 	return

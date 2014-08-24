@@ -1,7 +1,7 @@
 package decoding
 
 import (
-	"json/encoding"
+	"encoding/json"
 	"net/http"
 
 	"github.com/tshaddix/go-parcel"
@@ -24,6 +24,7 @@ func (self *JsonDecoder) Decode(r *http.Request, candidate parcel.Candidate) (er
 			err = &RequestDecodeError{
 				FromType: ute.Value,
 				ToType:   ute.Type.Name(),
+				Err:      err,
 			}
 		}
 	}

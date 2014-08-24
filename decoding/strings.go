@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/tshaddix/go-parcel"
 )
@@ -22,12 +23,12 @@ type (
 
 func (self *StringsDecoder) Decode(r *http.Request, candidate parcel.Candidate) (err error) {
 	// Shortcut for no strings
-	if self.stringer.Len() == 0 {
+	if self.stringer.Len(r) == 0 {
 		return
 	}
 
-	ty := reflect.TypeOf(candidate).Elem()
 	value := reflect.ValueOf(candidate).Elem()
+	ty := value.Type()
 
 	for i := 0; i < ty.NumField(); i++ {
 		field := ty.Field(i)
@@ -35,45 +36,50 @@ func (self *StringsDecoder) Decode(r *http.Request, candidate parcel.Candidate) 
 
 		// tag exists
 		if tag != "" {
-			qs := self.stringer.Get(tag)
+			qs := self.stringer.Get(r, tag)
 
 			// string exists
 			if qs != "" {
-				kind := field.Type.Kind()
+				if value.Field(i).CanSet() {
 
-				if kind == reflect.Int8 || kind == reflect.Int16 || kind == reflect.Int32 || kind == reflect.Int64 || kind == reflect.Int {
-					v, e := strconv.ParseInt(qs, 10, 64)
+					kind := field.Type.Kind()
 
-					if e != nil {
-						err = &RequestDecodeError{FromType: "string", ToType: "integer"}
-						return
-					}
+					if kind == reflect.Int8 || kind == reflect.Int16 || kind == reflect.Int32 || kind == reflect.Int64 || kind == reflect.Int {
+						v, e := strconv.ParseInt(qs, 10, 64)
 
-					value.Field(i).SetInt(v)
-				} else if kind == reflect.Float32 || kind == reflect.Float64 {
-					v, e := strconv.ParseFloat(qs, 10, 64)
+						if e != nil {
+							err = &RequestDecodeError{FromType: "string", ToType: "integer", Err: err}
+							return
+						}
 
-					if e != nil {
-						err = &RequestDecodeError{FromType: "string", ToType: "floating point"}
-						return
-					}
+						value.Field(i).SetInt(v)
+					} else if kind == reflect.Float32 || kind == reflect.Float64 {
+						v, e := strconv.ParseFloat(qs, 10)
 
-					value.Field(i).SetFloat(v)
-				} else if kind == reflect.String {
-					value.Field(i).SetString(qs)
-				} else if kind == reflect.Bool {
-					v := strings.ToLower(qs)
+						if e != nil {
+							err = &RequestDecodeError{FromType: "string", ToType: "floating point", Err: err}
+							return
+						}
 
-					if v == "true" {
-						value.Field(i).SetBool(true)
+						value.Field(i).SetFloat(v)
+					} else if kind == reflect.String {
+						value.Field(i).SetString(qs)
+					} else if kind == reflect.Bool {
+						v := strings.ToLower(qs)
+
+						if v == "true" {
+							value.Field(i).SetBool(true)
+						} else {
+							value.Field(i).SetBool(false)
+						}
 					} else {
-						value.Field(i).SetBool(false)
+						err = &RequestDecodeError{FromType: "string", ToType: field.Type.Name(), Err: err}
+						return
 					}
-				} else {
-					err = &RequestDecodeError{FromType: "string", ToType: field.Type.Name()}
-					return
 				}
 			}
 		}
 	}
+
+	return
 }

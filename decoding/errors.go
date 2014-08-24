@@ -4,6 +4,7 @@ type (
 	RequestDecodeError struct {
 		FromType string
 		ToType   string
+		Err      error
 	}
 )
 

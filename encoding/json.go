@@ -1,5 +1,5 @@
 import (
-	"encoding/xml"
+	"encoding/json"
 	"net/http"
 
 	"github.com/tshaddix/go-parcel"
