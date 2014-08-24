@@ -49,9 +49,11 @@ func main() {
 }
 ```
 
-## BYOD
+## BYOD/E
 
-Bring your own decoder. Here is an example using [gorilla mux](https://github.com/gorilla/mux) params:
+Bring your own decoder/encoder. Anything with the function `Decode(*http.Request, parcel.Candidate) error` is a viable decoder.
+
+Here is an example using [gorilla mux](https://github.com/gorilla/mux) params:
 
 ```go
 
@@ -63,10 +65,11 @@ import (
 	"github.com/tshaddix/go-parcel/decoding"
 )
 
+// decoding.Stringer implementation
 type MuxParamStringer struct {}
 
 func MuxParams() *decoding.StringsDecoder {
-	return &decoding.StringDecoder{
+	return &decoding.StringsDecoder{
 		new(MuxParamStringer),
 		"param",
 	}
@@ -82,6 +85,8 @@ func (self *MuxParamStringer) Get(r *http.Request, name string) string {
 
 // Later on
 
-factory.Decoders(MuxParams())
+factory.Decoder(MuxParams())
 
 ```
+
+Encoders have the function: `Encode(http.ResponseWriter, *http.Request, parcel.Candidate) (true, error)` the boolean result should indicate whether the encoding process wrote to the ResponseWriter. A `true` result will stop going down the line of remaining encoders.
