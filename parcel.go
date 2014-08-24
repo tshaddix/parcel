@@ -37,8 +37,8 @@ type (
 
 func NewFactory() *Factory {
 	f := new(Factory)
-	f.encoders = make([]Encoder)
-	f.decoders = make([]Decoder)
+	f.encoders = make([]Encoder, 5)
+	f.decoders = make([]Decoder, 5)
 	return f
 }
 
@@ -48,7 +48,7 @@ func (self *Factory) Encoder(encoder Encoder) {
 }
 
 // Decoder registers a decoder with the parcel factory
-func (self *Factory) Decoder(decoder decoder) {
+func (self *Factory) Decoder(decoder Decoder) {
 	self.decoders = append(self.decoders, decoder)
 }
 
@@ -68,10 +68,12 @@ func (self *Parcel) Encode(code int, c Candidate) (err error) {
 	var written bool
 
 	for _, encoder := range self.factory.encoders {
-		if written, err = self.Encode(self.rw, self.r, c); err != nil || written == true {
+		if written, err = encoder.Encode(self.rw, self.r, c); err != nil || written == true {
 			return
 		}
 	}
+
+	return
 }
 
 // Decode decodes candidate by passing through registered decoders on
@@ -82,4 +84,6 @@ func (self *Parcel) Decode(c Candidate) (err error) {
 			return
 		}
 	}
+
+	return
 }
