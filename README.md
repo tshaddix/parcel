@@ -53,7 +53,7 @@ func main() {
 
 Bring your own decoder/encoder. Anything with the function `Decode(*http.Request, parcel.Candidate) error` is a viable decoder.
 
-Here is an example using [gorilla mux](https://github.com/gorilla/mux) params:
+Here is an example using [gorilla mux](https://github.com/gorilla/mux) params and the helpful `StringsDecoder` (used internally in `QueryDecoder`):
 
 ```go
 
@@ -68,17 +68,21 @@ import (
 // decoding.Stringer implementation
 type MuxParamStringer struct {}
 
+// MuxParams is a shortcut for building a param
+// decoder off of the strings decoder 
 func MuxParams() *decoding.StringsDecoder {
 	return &decoding.StringsDecoder{
 		new(MuxParamStringer),
-		"param",
+		"param", // process fields in format `param:"name"`
 	}
 }
 
+// Len returns length of strings source
 func (self *MuxParamStringer) Len(r *http.Request) int {
 	return len(mux.Vars(r))
 }
 
+// Get returns the string value of a named parameter
 func (self *MuxParamStringer) Get(r *http.Request, name string) string {
 	return mux.Vars(r)[name]
 }
