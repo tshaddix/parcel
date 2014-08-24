@@ -7,19 +7,15 @@ import (
 type (
 	QueryStringer struct {
 	}
-
-	QueryDecoder struct {
-		sd *StringsDecoder
-	}
 )
 
-func Query() *QueryDecoder {
+func Query() *StringsDecoder {
 	sd := &StringsDecoder{
 		new(QueryStringer),
 		"query",
 	}
 
-	return &QueryDecoder{sd}
+	return sd
 }
 
 func (self *QueryStringer) Len(r *http.Request) int {
@@ -28,8 +24,4 @@ func (self *QueryStringer) Len(r *http.Request) int {
 
 func (self *QueryStringer) Get(r *http.Request, name string) string {
 	return r.URL.Query().Get(name)
-}
-
-func (self *QueryDecoder) Decode(r *http.Request, candidate parcel.Candidate) (err error) {
-	return self.sd.Decode(r, candidate)
 }
