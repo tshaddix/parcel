@@ -22,9 +22,9 @@ type (
 
 func TestDecoding(t *testing.T) {
 	factory := NewFactory()
-	factory.Decoder(decoding.Json())
-	factory.Decoder(decoding.Xml())
-	factory.Decoder(decoding.Query())
+	factory.Use(decoding.Json())
+	factory.Use(decoding.Xml())
+	factory.Use(decoding.Query())
 
 	jsonReader, err := os.Open("test/test.json")
 

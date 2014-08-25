@@ -64,6 +64,22 @@ func (self *Factory) Decoder(decoder Decoder) {
 	self.decoders = append(self.decoders, decoder)
 }
 
+// Use is a convience function to register encoders or
+// decoders
+func (self *Factory) Use(i interface{}) {
+	if decoder, ok := i.(Decoder); ok {
+		self.Decoder(decoder)
+		return
+	}
+
+	if encoder, ok := i.(Encoder); ok {
+		self.Encoder(encoder)
+		return
+	}
+
+	panic("Use requires an Encoder or Decoder implementation")
+}
+
 // Parcel creates a parcel for the given http context
 func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 	return &Parcel{RW: rw, R: r, factory: self}
