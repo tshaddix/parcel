@@ -11,7 +11,6 @@ import (
 
 	"github.com/tshaddix/go-parcel"
 	"github.com/tshaddix/go-parcel/encoding"
-	"github.com/tshaddix/go-parcel/decoding"
 )
 
 func main() {
@@ -19,14 +18,14 @@ func main() {
 
 	// Encoders will be called in the
 	// order they are registered
-	factory.Encoder(encoding.Json())
-	factory.Encoder(encoding.Xml())
+	factory.Use(encoding.JsonEncode())
+	factory.Use(encoding.XmlEncode())
 
 	// Decoders will be called in the order
 	// they are registered
-	factory.Decoder(decoding.Query())
-	factory.Decoder(decoding.Json())
-	factory.Decoder(decoding.Xml())
+	factory.Decoder(encoding.QueryDecode())
+	factory.Decoder(encoding.JsonDecode())
+	factory.Decoder(encoding.XmlDecode())
 
 	myHandler := func(rw http.ResponseWriter, r *http.Request){
 		p := factory.Parcel(rw, r)
@@ -62,7 +61,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/tshaddix/go-parcel"
-	"github.com/tshaddix/go-parcel/decoding"
+	"github.com/tshaddix/go-parcel/encoding"
 )
 
 // decoding.Stringer implementation
@@ -70,8 +69,8 @@ type MuxParamStringer struct {}
 
 // MuxParams is a shortcut for building a param
 // decoder off of the strings decoder 
-func MuxParams() *decoding.StringsDecoder {
-	return decoding.Strings({
+func MuxParams() *encoding.StringsDecoder {
+	return encoding.StringsDecode({
 		new(MuxParamStringer),
 		"param", // process fields in format `param:"name"`
 	})
