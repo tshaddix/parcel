@@ -16,7 +16,7 @@ func Json() *JsonDecoder {
 	return new(JsonDecoder)
 }
 
-// Decoder simple wraps "encoding/json" decoder
+// Decode simple wraps "encoding/json" decoder
 // implementation by processing any request with
 // content-type set to "application/json"
 func (self *JsonDecoder) Decode(r *http.Request, candidate interface{}) (err error) {

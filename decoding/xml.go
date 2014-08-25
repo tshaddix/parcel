@@ -17,7 +17,7 @@ func Xml() *XmlDecoder {
 	return new(XmlDecoder)
 }
 
-// Decoder simple wraps "encoding/xml" decoder
+// Decode simply wraps "encoding/xml" decoder
 // implementation by processing any request with
 // content-type set to "application/xml" or "text/xml"
 func (self *XmlDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
