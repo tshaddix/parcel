@@ -23,9 +23,9 @@ func main() {
 
 	// Decoders will be called in the order
 	// they are registered
-	factory.Decoder(encoding.QueryDecode())
-	factory.Decoder(encoding.JsonDecode())
-	factory.Decoder(encoding.XmlDecode())
+	factory.Use(encoding.QueryDecode())
+	factory.Use(encoding.JsonDecode())
+	factory.Use(encoding.XmlDecode())
 
 	myHandler := func(rw http.ResponseWriter, r *http.Request){
 		p := factory.Parcel(rw, r)
