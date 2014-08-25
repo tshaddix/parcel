@@ -71,10 +71,10 @@ type MuxParamStringer struct {}
 // MuxParams is a shortcut for building a param
 // decoder off of the strings decoder 
 func MuxParams() *decoding.StringsDecoder {
-	return &decoding.StringsDecoder{
+	return decoding.Strings({
 		new(MuxParamStringer),
 		"param", // process fields in format `param:"name"`
-	}
+	})
 }
 
 // Len returns length of strings source
@@ -96,4 +96,6 @@ factory.Decoder(MuxParams())
 Encoders have the function: `Encode(http.ResponseWriter, *http.Request, parcel.Candidate) (true, error)` the boolean result should indicate whether the encoding process wrote to the ResponseWriter. A `true` result will stop going down the line of remaining encoders.
 
 ## TODO
+- Comments on decoding/encoding packages
+- Update README with better examples and abilities.
 - Add more test cases

@@ -6,34 +6,44 @@ import (
 )
 
 type (
+	// Candidate is a shortcut for candidate targets
+	Candidate interface{}
+
+	// Decoder implementations should decode values from a
+	// request to a candidate
 	Decoder interface {
-		Decode(*http.Request, interface{}) error
+		Decode(*http.Request, Candidate) error
 	}
 
+	// Encoder implementations should encode values from a candidate
+	// to a ResponseWriter. A bool should be returned to indicate whether
+	// the encoder wrote a response
 	Encoder interface {
-		Encode(http.ResponseWriter, *http.Request, interface{}) (bool, error)
+		Encode(http.ResponseWriter, *http.Request, Candidate) (bool, error)
 	}
 
+	// Parcel is a simple reference structure that
+	// enables easy encoding and decoding
 	Parcel struct {
 		RW      http.ResponseWriter
 		R       *http.Request
 		factory *Factory
 	}
 
+	// Factory stores the implementation details of available
+	// and configured encoders and decoders
 	Factory struct {
 		encoders []Encoder
 		decoders []Decoder
 	}
-
-	Candidate interface{}
 )
 
 var (
+	// Error returned when no response encoding is written to an http.ResponseWriter
 	ResponseNotWrittenError = errors.New("Response was not written: No encoder indicated a written response")
 )
 
-// Factory
-
+// NewFactory creates a new Parcel factory
 func NewFactory() *Factory {
 	f := new(Factory)
 	f.encoders = make([]Encoder, 0)
@@ -60,7 +70,8 @@ func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 
 // Encode encodes candidate by passing through registered encoders on
 // parent factory. Encoding will cease as soon as an encoder has responded
-// with a `written` result of `true`.
+// with a `written` result of `true`. If no encoders write to the response,
+// an ResponseNotWrittenError is returned.
 func (self *Parcel) Encode(code int, c Candidate) (err error) {
 	self.RW.WriteHeader(code)
 
@@ -80,7 +91,8 @@ func (self *Parcel) Encode(code int, c Candidate) (err error) {
 }
 
 // Decode decodes candidate by passing through registered decoders on
-// parent factory.
+// parent factory. If any decoder returns an error, the chain is stopped
+// and the error is returned
 func (self *Parcel) Decode(c Candidate) (err error) {
 	for _, decoder := range self.factory.decoders {
 		if err = decoder.Decode(self.R, c); err != nil {

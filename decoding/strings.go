@@ -8,39 +8,61 @@ import (
 )
 
 type (
+	// Stringer implementations should
+	// provide a way to fetch the length
+	// of the string source and get a string
+	// by a key
 	Stringer interface {
 		Get(*http.Request, string) string
 		Len(*http.Request) int
 	}
 
+	// StringsDecoder is a parcel.Decoder
+	// implementation that decodes from a
+	// string source
 	StringsDecoder struct {
 		stringer Stringer
-		tagName  string
+
+		// tagName indicates the tag value
+		// used to find matching keys
+		// (e.g. "query")
+		tagName string
 	}
 
+	// StringsDecodeError is used to indicate
+	// an error during the decoding process of
+	// Stringer
 	StringsDecodeError struct {
 		FromType string
 		ToType   string
 	}
 )
 
+// Strings returns a new configured StringsDecoder
 func Strings(stringer Stringer, name string) *StringsDecoder {
 	return &StringsDecoder{stringer, name}
 }
 
+// Error provides the error implementation for
+// a StringsDecodeError
 func (self *StringsDecodeError) Error() string {
 	return "StringsDecodeError: Can not convert type " + self.FromType + " to type " + self.ToType
 }
 
+// Decode uses a Stringer to match keys to
+// candidate tags and convert values to the
+// appropriate type
 func (self *StringsDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
 	// Shortcut for no strings
 	if self.stringer.Len(r) == 0 {
 		return
 	}
 
+	// Value and type of candidate
 	value := reflect.ValueOf(candidate).Elem()
 	ty := value.Type()
 
+	// Iterate candidate fields
 	for i := 0; i < ty.NumField(); i++ {
 		field := ty.Field(i)
 		tag := field.Tag.Get(self.tagName)
@@ -52,6 +74,8 @@ func (self *StringsDecoder) Decode(r *http.Request, candidate interface{}) (err 
 			// string exists
 			if qs != "" {
 				if value.Field(i).CanSet() {
+
+					// Do conversion
 
 					kind := field.Type.Kind()
 

@@ -5,19 +5,20 @@ import (
 	"net/http"
 )
 
-const (
-	MimeXml  = "application/xml"
-	MimeXml2 = "text/xml"
-)
-
 type (
+	// XmlEncoder is a XML implementation
+	// of parcel.Encoder
 	XmlEncoder struct{}
 )
 
+// Xml returns a new XML encoder
 func Xml() *XmlEncoder {
 	return new(XmlEncoder)
 }
 
+// Encode will encode the candidate as a XML response
+// given the request content-type is set to "application/xml"
+// or "text/xml"
 func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written bool, err error) {
 	ct := r.Header.Get("Content-Type")
 
