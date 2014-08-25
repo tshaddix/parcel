@@ -1,3 +1,5 @@
+// Package decoding provides preconfigured
+// decoders for JSON, XML, and Query strings
 package decoding
 
 // MIME types

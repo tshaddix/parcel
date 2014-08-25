@@ -1,3 +1,6 @@
+// Package parcel provides encoding and
+// decoding of candidate values from http
+// sources
 package parcel
 
 import (
