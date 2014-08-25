@@ -15,14 +15,14 @@ type (
 	// Decoder implementations should decode values from a
 	// request to a candidate
 	Decoder interface {
-		Decode(*http.Request, Candidate) error
+		Decode(*http.Request, interface{}) error
 	}
 
 	// Encoder implementations should encode values from a candidate
 	// to a ResponseWriter. A bool should be returned to indicate whether
 	// the encoder wrote a response
 	Encoder interface {
-		Encode(http.ResponseWriter, *http.Request, Candidate) (bool, error)
+		Encode(http.ResponseWriter, *http.Request, interface{}) (bool, error)
 	}
 
 	// Parcel is a simple reference structure that
