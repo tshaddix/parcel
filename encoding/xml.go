@@ -6,8 +6,8 @@ import (
 )
 
 const (
-	MimeXml = "application/xml"
-	MimXml2 = "text/xml"
+	MimeXml  = "application/xml"
+	MimeXml2 = "text/xml"
 )
 
 type (
@@ -18,7 +18,7 @@ func Xml() *XmlEncoder {
 	return new(XmlEncoder)
 }
 
-func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written true, err error) {
+func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written bool, err error) {
 	ct := r.Header.Get("Content-Type")
 
 	if ct == MimeXml || ct == MimeXml2 {
