@@ -14,8 +14,8 @@ type (
 	}
 
 	Parcel struct {
-		rw      http.ResponseWriter
-		r       *http.Request
+		RW      http.ResponseWriter
+		R       *http.Request
 		factory *Factory
 	}
 
@@ -48,7 +48,7 @@ func (self *Factory) Decoder(decoder Decoder) {
 
 // Parcel creates a parcel for the given http context
 func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
-	return &Parcel{rw: rw, r: r, factory: self}
+	return &Parcel{RW: rw, R: r, factory: self}
 }
 
 // Parcel
@@ -57,12 +57,12 @@ func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 // parent factory. Encoding will cease as soon as an encoder has responded
 // with a `written` result of `true`.
 func (self *Parcel) Encode(code int, c Candidate) (err error) {
-	self.rw.WriteHeader(code)
+	self.RW.WriteHeader(code)
 
 	var written bool
 
 	for _, encoder := range self.factory.encoders {
-		if written, err = encoder.Encode(self.rw, self.r, c); err != nil || written == true {
+		if written, err = encoder.Encode(self.RW, self.R, c); err != nil || written == true {
 			return
 		}
 	}
@@ -74,7 +74,7 @@ func (self *Parcel) Encode(code int, c Candidate) (err error) {
 // parent factory.
 func (self *Parcel) Decode(c Candidate) (err error) {
 	for _, decoder := range self.factory.decoders {
-		if err = decoder.Decode(self.r, c); err != nil {
+		if err = decoder.Decode(self.R, c); err != nil {
 			return
 		}
 	}
