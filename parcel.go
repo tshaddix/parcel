@@ -1,6 +1,7 @@
 package parcel
 
 import (
+	"errors"
 	"net/http"
 )
 
@@ -25,6 +26,10 @@ type (
 	}
 
 	Candidate interface{}
+)
+
+var (
+	ResponseNotWrittenError = errors.New("Response was not written: No encoder indicated a written response")
 )
 
 // Factory
@@ -65,6 +70,10 @@ func (self *Parcel) Encode(code int, c Candidate) (err error) {
 		if written, err = encoder.Encode(self.RW, self.R, c); err != nil || written == true {
 			return
 		}
+	}
+
+	if !written {
+		err = ResponseNotWrittenError
 	}
 
 	return
