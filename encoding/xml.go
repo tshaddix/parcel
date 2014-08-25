@@ -48,7 +48,7 @@ func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidat
 func (self *XmlDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
 	ct := r.Header.Get("Content-Type")
 
-	if ct == MimeXml || ct == MimeXml2 {
+	if (ct == MimeXml || ct == MimeXml2) && r.ContentLength > 0 {
 		err = xml.NewDecoder(r.Body).Decode(candidate)
 	}
 
