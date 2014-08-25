@@ -17,5 +17,5 @@ func (self *QueryStringer) Get(r *http.Request, name string) string {
 }
 
 func Query() *StringsDecoder {
-	return &StringsDecoder{new(QueryStringer), "query"}
+	return Strings(new(QueryStringer), "query")
 }

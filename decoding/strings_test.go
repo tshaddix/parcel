@@ -35,7 +35,7 @@ func TestStringsDecoder(t *testing.T) {
 		},
 	}
 
-	decoder := &StringsDecoder{stringer, "test"}
+	decoder := Strings(stringer, "test")
 
 	req, _ := http.NewRequest("POST", "/test", nil)
 

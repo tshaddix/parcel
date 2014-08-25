@@ -24,6 +24,10 @@ type (
 	}
 )
 
+func Strings(stringer Stringer, name string) *StringsDecoder {
+	return &StringsDecoder{stringer, name}
+}
+
 func (self *StringsDecodeError) Error() string {
 	return "StringsDecodeError: Can not convert type " + self.FromType + " to type " + self.ToType
 }
