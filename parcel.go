@@ -65,7 +65,8 @@ func (self *Factory) Decoder(decoder Decoder) {
 }
 
 // Use is a convience function to register encoders or
-// decoders
+// decoders. If the argument does not implement an encoder
+// or decoder, panic
 func (self *Factory) Use(i interface{}) {
 	if decoder, ok := i.(Decoder); ok {
 		self.Decoder(decoder)
