@@ -6,7 +6,7 @@ import (
 )
 
 type (
-	TestCandidate struct {
+	TestStrings struct {
 		Name  string `test:"name"`
 		Email string `test:"email"`
 		Age   int    `test:"age"`
@@ -39,21 +39,21 @@ func TestStringsDecoder(t *testing.T) {
 
 	req, _ := http.NewRequest("POST", "/test", nil)
 
-	candidate := new(TestCandidate)
+	candidate := new(TestStrings)
 
 	if err := decoder.Decode(req, candidate); err != nil {
 		t.Fatal(err)
 	}
 
 	if candidate.Age != 22 {
-		t.Fail()
+		t.Fatal("Age", candidate.Age)
 	}
 
 	if candidate.Email != "example@test.com" {
-		t.Fail()
+		t.Fatal("Email", candidate.Email)
 	}
 
 	if candidate.Name != "Tyler" {
-		t.Fail()
+		t.Fatal("Name", candidate.Name)
 	}
 }

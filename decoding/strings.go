@@ -5,8 +5,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-
-	"github.com/tshaddix/go-parcel"
 )
 
 type (
@@ -19,9 +17,18 @@ type (
 		stringer Stringer
 		tagName  string
 	}
+
+	StringsDecodeError struct {
+		FromType string
+		ToType   string
+	}
 )
 
-func (self *StringsDecoder) Decode(r *http.Request, candidate parcel.Candidate) (err error) {
+func (self *StringsDecodeError) Error() string {
+	return "StringsDecodeError: Can not convert type " + self.FromType + " to type " + self.ToType
+}
+
+func (self *StringsDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
 	// Shortcut for no strings
 	if self.stringer.Len(r) == 0 {
 		return
@@ -48,7 +55,7 @@ func (self *StringsDecoder) Decode(r *http.Request, candidate parcel.Candidate) 
 						v, e := strconv.ParseInt(qs, 10, 64)
 
 						if e != nil {
-							err = &RequestDecodeError{FromType: "string", ToType: "integer", Err: err}
+							err = &StringsDecodeError{FromType: "string", ToType: "integer"}
 							return
 						}
 
@@ -57,7 +64,7 @@ func (self *StringsDecoder) Decode(r *http.Request, candidate parcel.Candidate) 
 						v, e := strconv.ParseFloat(qs, 10)
 
 						if e != nil {
-							err = &RequestDecodeError{FromType: "string", ToType: "floating point", Err: err}
+							err = &StringsDecodeError{FromType: "string", ToType: "floating point"}
 							return
 						}
 
@@ -73,7 +80,7 @@ func (self *StringsDecoder) Decode(r *http.Request, candidate parcel.Candidate) 
 							value.Field(i).SetBool(false)
 						}
 					} else {
-						err = &RequestDecodeError{FromType: "string", ToType: field.Type.Name(), Err: err}
+						err = &StringsDecodeError{FromType: "string", ToType: field.Type.Name()}
 						return
 					}
 				}

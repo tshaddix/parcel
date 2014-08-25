@@ -3,8 +3,11 @@ package encoding
 import (
 	"encoding/xml"
 	"net/http"
+)
 
-	"github.com/tshaddix/go-parcel"
+const (
+	MimeXml = "application/xml"
+	MimXml2 = "text/xml"
 )
 
 type (
@@ -15,10 +18,10 @@ func Xml() *XmlEncoder {
 	return new(XmlEncoder)
 }
 
-func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate parcel.Candidate) (written true, err error) {
+func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written true, err error) {
 	ct := r.Header.Get("Content-Type")
 
-	if ct == parcel.MimeXml || ct == parcel.MimXml2 {
+	if ct == MimeXml || ct == MimeXml2 {
 		written = true
 
 		rw.Header().Set("Content-Type", ct)

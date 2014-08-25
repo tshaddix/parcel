@@ -1,8 +1,12 @@
+package encoding
+
 import (
 	"encoding/json"
 	"net/http"
+)
 
-	"github.com/tshaddix/go-parcel"
+const (
+	MimeJson = "application/json"
 )
 
 type (
@@ -13,11 +17,11 @@ func Json() *JsonEncoder {
 	return new(JsonEncoder)
 }
 
-func (self *JsonEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate parcel.Candidate) (written bool, err error) {
-	if r.Header.Get("Content-Type") == parcel.MimeJson {
+func (self *JsonEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written bool, err error) {
+	if r.Header.Get("Content-Type") == MimeJson {
 		written = true
 
-		rw.Header().Set("Content-Type", parcel.MimeJson)
+		rw.Header().Set("Content-Type", MimeJson)
 		encoder := json.NewEncoder(rw)
 		err = encoder.Encode(candidate)
 	}

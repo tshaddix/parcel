@@ -3,8 +3,10 @@ package decoding
 import (
 	"encoding/json"
 	"net/http"
+)
 
-	"github.com/tshaddix/go-parcel"
+const (
+	MimeJson = "application/json"
 )
 
 type (
@@ -15,18 +17,10 @@ func Json() *JsonDecoder {
 	return new(JsonDecoder)
 }
 
-func (self *JsonDecoder) Decode(r *http.Request, candidate parcel.Candidate) (err error) {
+func (self *JsonDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
 
-	if r.Header.Get("Content-Type") == parcel.MimeJson {
+	if r.Header.Get("Content-Type") == MimeJson {
 		err = json.NewDecoder(r.Body).Decode(candidate)
-
-		if ute, ok := err.(*json.UnmarshalTypeError); ok {
-			err = &RequestDecodeError{
-				FromType: ute.Value,
-				ToType:   ute.Type.Name(),
-				Err:      err,
-			}
-		}
 	}
 
 	return

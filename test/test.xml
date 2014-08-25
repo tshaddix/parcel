@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Data>
+		<name>Tyler Shaddix</name>
+		<email>tyler@example.com</email>
+		<age>23</age>
+		<is-admin>true</is-admin>
+		<hourly-rate>22.50</hourly-rate>
+</Data>

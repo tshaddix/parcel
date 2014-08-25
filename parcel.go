@@ -4,12 +4,6 @@ import (
 	"net/http"
 )
 
-const (
-	MimeJson = "application/json"
-	MimeXml  = "application/xml"
-	MimeXml2 = "text/xml"
-)
-
 type (
 	Decoder interface {
 		Decode(*http.Request, interface{}) error
@@ -37,8 +31,8 @@ type (
 
 func NewFactory() *Factory {
 	f := new(Factory)
-	f.encoders = make([]Encoder, 5)
-	f.decoders = make([]Decoder, 5)
+	f.encoders = make([]Encoder, 0)
+	f.decoders = make([]Decoder, 0)
 	return f
 }
 

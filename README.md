@@ -94,3 +94,6 @@ factory.Decoder(MuxParams())
 ```
 
 Encoders have the function: `Encode(http.ResponseWriter, *http.Request, parcel.Candidate) (true, error)` the boolean result should indicate whether the encoding process wrote to the ResponseWriter. A `true` result will stop going down the line of remaining encoders.
+
+## TODO
+- Add more test cases
