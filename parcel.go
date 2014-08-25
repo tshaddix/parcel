@@ -93,8 +93,6 @@ func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 // with a `written` result of `true`. If no encoders write to the response,
 // an ResponseNotWrittenError is returned.
 func (self *Parcel) Encode(code int, c Candidate) (err error) {
-	self.RW.WriteHeader(code)
-
 	var written bool
 
 	for _, encoder := range self.factory.encoders {
