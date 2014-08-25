@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tshaddix/go-parcel/decoding"
+	"github.com/tshaddix/go-parcel/encoding"
 )
 
 type (
@@ -22,9 +22,9 @@ type (
 
 func TestDecoding(t *testing.T) {
 	factory := NewFactory()
-	factory.Use(decoding.Json())
-	factory.Use(decoding.Xml())
-	factory.Use(decoding.Query())
+	factory.Use(encoding.JsonDecode())
+	factory.Use(encoding.XmlDecode())
+	factory.Use(encoding.QueryDecode())
 
 	jsonReader, err := os.Open("test/test.json")
 

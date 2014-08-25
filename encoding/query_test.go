@@ -1,4 +1,4 @@
-package decoding
+package encoding
 
 import (
 	"net/http"
@@ -15,7 +15,7 @@ type (
 
 func TestQueryDecoder(t *testing.T) {
 
-	decoder := Query()
+	decoder := QueryDecode()
 
 	req, _ := http.NewRequest("GET", "/list?sort-by=name&limit=100&show-inactive=true", nil)
 

@@ -1,4 +1,4 @@
-package decoding
+package encoding
 
 import (
 	"net/http"
@@ -38,8 +38,8 @@ type (
 	}
 )
 
-// Strings returns a new configured StringsDecoder
-func Strings(stringer Stringer, name string) *StringsDecoder {
+// StringsDecode returns a new configured StringsDecoder
+func StringsDecode(stringer Stringer, name string) *StringsDecoder {
 	return &StringsDecoder{stringer, name}
 }
 

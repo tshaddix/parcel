@@ -1,4 +1,4 @@
-package decoding
+package encoding
 
 import (
 	"net/http"
@@ -31,7 +31,7 @@ func TestJsonDecoder(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/json")
 
-	decoder := Json()
+	decoder := JsonDecode()
 
 	candidate := new(TestJson)
 

@@ -1,4 +1,4 @@
-package decoding
+package encoding
 
 import (
 	"net/http"
@@ -31,7 +31,7 @@ func TestXmlDecoder(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/xml")
 
-	decoder := Xml()
+	decoder := XmlDecode()
 
 	candidate := new(TestXml)
 

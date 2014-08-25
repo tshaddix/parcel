@@ -1,4 +1,4 @@
-package decoding
+package encoding
 
 import (
 	"net/http"
@@ -22,8 +22,8 @@ func (self *QueryStringer) Get(r *http.Request, name string) string {
 	return r.URL.Query().Get(name)
 }
 
-// Query returns a StringsDecoder configured
+// QueryDecode returns a StringsDecoder configured
 // with a QueryStringer and tag-name "query"
-func Query() *StringsDecoder {
-	return Strings(new(QueryStringer), "query")
+func QueryDecode() *StringsDecoder {
+	return StringsDecode(new(QueryStringer), "query")
 }

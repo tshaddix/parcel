@@ -1,4 +1,4 @@
-package decoding
+package encoding
 
 import (
 	"net/http"
@@ -35,7 +35,7 @@ func TestStringsDecoder(t *testing.T) {
 		},
 	}
 
-	decoder := Strings(stringer, "test")
+	decoder := StringsDecode(stringer, "test")
 
 	req, _ := http.NewRequest("POST", "/test", nil)
 
