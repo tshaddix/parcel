@@ -2,7 +2,6 @@ package encoding
 
 import (
 	"encoding/json"
-	"io"
 	"net/http"
 )
 
@@ -31,11 +30,8 @@ func JsonEncode() *JsonEncoder {
 // content-type set to "application/json"
 func (self *JsonDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
 
-	if r.Header.Get("Content-Type") == MimeJson {
-		if err = json.NewDecoder(r.Body).Decode(candidate); err == io.EOF {
-			// Ignore Graceful EOF errors
-			err = nil
-		}
+	if r.Header.Get("Content-Type") == MimeJson && r.ContentLength > 0 {
+		err = json.NewDecoder(r.Body).Decode(candidate)
 	}
 
 	return

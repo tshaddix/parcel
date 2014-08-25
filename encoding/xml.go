@@ -2,7 +2,6 @@ package encoding
 
 import (
 	"encoding/xml"
-	"io"
 	"net/http"
 )
 
@@ -49,11 +48,8 @@ func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidat
 func (self *XmlDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
 	ct := r.Header.Get("Content-Type")
 
-	if ct == MimeXml || ct == MimeXml2 {
-		if err = xml.NewDecoder(r.Body).Decode(candidate); err == io.EOF {
-			// Ignore Graceful EOF errors
-			err = nil
-		}
+	if (ct == MimeXml || ct == MimeXml2) && r.ContentLength > 0 {
+		err = xml.NewDecoder(r.Body).Decode(candidate)
 	}
 
 	return
