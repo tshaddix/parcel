@@ -22,7 +22,7 @@ type (
 	// to a ResponseWriter. A bool should be returned to indicate whether
 	// the encoder wrote a response
 	Encoder interface {
-		Encode(http.ResponseWriter, *http.Request, interface{}) (bool, error)
+		Encode(http.ResponseWriter, *http.Request, interface{}, int) (bool, error)
 	}
 
 	// Parcel is a simple reference structure that
@@ -98,7 +98,7 @@ func (self *Parcel) Encode(code int, c Candidate) (err error) {
 	var written bool
 
 	for _, encoder := range self.factory.encoders {
-		if written, err = encoder.Encode(self.RW, self.R, c); err != nil || written == true {
+		if written, err = encoder.Encode(self.RW, self.R, c, code); err != nil || written == true {
 			return
 		}
 	}

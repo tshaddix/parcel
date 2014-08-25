@@ -28,13 +28,15 @@ func XmlDecode() *XmlDecoder {
 // Encode will encode the candidate as a XML response
 // given the request content-type is set to "application/xml"
 // or "text/xml"
-func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written bool, err error) {
+func (self *XmlEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
 	ct := r.Header.Get("Content-Type")
 
 	if ct == MimeXml || ct == MimeXml2 {
 		written = true
 
 		rw.Header().Set("Content-Type", ct)
+		rw.WriteHeader(code)
+
 		encoder := xml.NewEncoder(rw)
 		err = encoder.Encode(candidate)
 	}

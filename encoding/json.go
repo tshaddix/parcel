@@ -39,11 +39,13 @@ func (self *JsonDecoder) Decode(r *http.Request, candidate interface{}) (err err
 
 // Encode will encode the candidate as a JSON response given
 // the request content-type is set to "application/json"
-func (self *JsonEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}) (written bool, err error) {
+func (self *JsonEncoder) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
 	if r.Header.Get("Content-Type") == MimeJson {
 		written = true
 
 		rw.Header().Set("Content-Type", MimeJson)
+		rw.WriteHeader(code)
+
 		encoder := json.NewEncoder(rw)
 		err = encoder.Encode(candidate)
 	}
