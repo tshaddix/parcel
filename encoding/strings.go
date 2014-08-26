@@ -17,10 +17,10 @@ type (
 		Len(*http.Request) int
 	}
 
-	// StringsDecoder is a parcel.Decoder
+	// StringsCodec is a parcel.Decoder
 	// implementation that decodes from a
 	// string source
-	StringsDecoder struct {
+	StringsCodec struct {
 		stringer Stringer
 
 		// tagName indicates the tag value
@@ -38,9 +38,9 @@ type (
 	}
 )
 
-// StringsDecode returns a new configured StringsDecoder
-func StringsDecode(stringer Stringer, name string) *StringsDecoder {
-	return &StringsDecoder{stringer, name}
+// Strings returns a new configured Strings
+func Strings(stringer Stringer, name string) *StringsCodec {
+	return &StringsCodec{stringer, name}
 }
 
 // Error provides the error implementation for
@@ -52,7 +52,7 @@ func (self *StringsDecodeError) Error() string {
 // Decode uses a Stringer to match keys to
 // candidate tags and convert values to the
 // appropriate type
-func (self *StringsDecoder) Decode(r *http.Request, candidate interface{}) (err error) {
+func (self *StringsCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 	// Shortcut for no strings
 	if self.stringer.Len(r) == 0 {
 		return

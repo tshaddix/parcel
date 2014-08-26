@@ -1,7 +1,7 @@
 {
-	"Name" : "Tyler Shaddix",
-	"Email" : "tyler@example.com",
-	"Age" : 23,
-	"IsAdmin" : true,
-	"HourlyRate" : 22.50
+	"name" : "Tyler Shaddix",
+	"email" : "tyler@example.com",
+	"age" : 23,
+	"isAdmin" : true,
+	"hourlyRate" : 22.50
 }

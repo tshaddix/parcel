@@ -29,9 +29,17 @@ func TestXmlDecoder(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	stat, err := bodyReader.Stat()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r.ContentLength = stat.Size()
+
 	r.Header.Set("Content-Type", "application/xml")
 
-	decoder := XmlDecode()
+	decoder := Xml()
 
 	candidate := new(TestXml)
 

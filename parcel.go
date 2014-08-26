@@ -54,31 +54,26 @@ func NewFactory() *Factory {
 	return f
 }
 
-// Encoder registers an encoder with the parcel factory
-func (self *Factory) Encoder(encoder Encoder) {
+// UseEncoder registers an encoder with the parcel factory
+func (self *Factory) UseEncoder(encoder Encoder) {
 	self.encoders = append(self.encoders, encoder)
 }
 
-// Decoder registers a decoder with the parcel factory
-func (self *Factory) Decoder(decoder Decoder) {
+// UseDecoder registers a decoder with the parcel factory
+func (self *Factory) UseDecoder(decoder Decoder) {
 	self.decoders = append(self.decoders, decoder)
 }
 
-// Use is a convience function to register encoders or
-// decoders. If the argument does not implement an encoder
-// or decoder, panic
+// Use is a convience function to register encoders and
+// decoders.
 func (self *Factory) Use(i interface{}) {
 	if decoder, ok := i.(Decoder); ok {
-		self.Decoder(decoder)
-		return
+		self.UseDecoder(decoder)
 	}
 
 	if encoder, ok := i.(Encoder); ok {
-		self.Encoder(encoder)
-		return
+		self.UseEncoder(encoder)
 	}
-
-	panic("Use requires an Encoder or Decoder implementation")
 }
 
 // Parcel creates a parcel for the given http context

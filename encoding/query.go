@@ -22,8 +22,8 @@ func (self *QueryStringer) Get(r *http.Request, name string) string {
 	return r.URL.Query().Get(name)
 }
 
-// QueryDecode returns a StringsDecoder configured
+// QueryDecode returns a StringsCodec configured
 // with a QueryStringer and tag-name "query"
-func QueryDecode() *StringsDecoder {
-	return StringsDecode(new(QueryStringer), "query")
+func Query() *StringsCodec {
+	return Strings(new(QueryStringer), "query")
 }

@@ -22,9 +22,9 @@ type (
 
 func TestDecoding(t *testing.T) {
 	factory := NewFactory()
-	factory.Use(encoding.JsonDecode())
-	factory.Use(encoding.XmlDecode())
-	factory.Use(encoding.QueryDecode())
+	factory.Use(encoding.Json())
+	factory.Use(encoding.Xml())
+	factory.Use(encoding.Query())
 
 	jsonReader, err := os.Open("test/test.json")
 
@@ -37,6 +37,14 @@ func TestDecoding(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	stat, err := jsonReader.Stat()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r.ContentLength = stat.Size()
 
 	r.Header.Set("Content-Type", "application/json")
 

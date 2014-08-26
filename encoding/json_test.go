@@ -29,9 +29,17 @@ func TestJsonDecoder(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	stat, err := bodyReader.Stat()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	r.ContentLength = stat.Size()
+
 	r.Header.Set("Content-Type", "application/json")
 
-	decoder := JsonDecode()
+	decoder := Json()
 
 	candidate := new(TestJson)
 

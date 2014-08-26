@@ -15,7 +15,7 @@ type (
 
 func TestQueryDecoder(t *testing.T) {
 
-	decoder := QueryDecode()
+	decoder := Query()
 
 	req, _ := http.NewRequest("GET", "/list?sort-by=name&limit=100&show-inactive=true", nil)
 

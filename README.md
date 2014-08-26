@@ -16,16 +16,11 @@ import (
 func main() {
 	factory := parcel.NewFactory()
 
-	// Encoders will be called in the
-	// order they are registered
-	factory.Use(encoding.JsonEncode())
-	factory.Use(encoding.XmlEncode())
-
-	// Decoders will be called in the order
-	// they are registered
-	factory.Use(encoding.QueryDecode())
-	factory.Use(encoding.JsonDecode())
-	factory.Use(encoding.XmlDecode())
+	// Encoders/Decoders will be called in the order
+	// they are registered. 
+	factory.Use(encoding.Query())
+	factory.Use(encoding.Json())
+	factory.Use(encoding.Xml())
 
 	myHandler := func(rw http.ResponseWriter, r *http.Request){
 		p := factory.Parcel(rw, r)
@@ -69,8 +64,8 @@ type MuxParamStringer struct {}
 
 // MuxParams is a shortcut for building a param
 // decoder off of the strings decoder 
-func MuxParams() *encoding.StringsDecoder {
-	return encoding.StringsDecode({
+func MuxParams() *encoding.StringsCodec {
+	return encoding.Strings({
 		new(MuxParamStringer),
 		"param", // process fields in format `param:"name"`
 	})
