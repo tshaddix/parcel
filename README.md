@@ -122,10 +122,10 @@ type MuxParamStringer struct {}
 // MuxParams is a shortcut for building a param
 // decoder off of the strings decoder 
 func MuxParams() *encoding.StringsCodec {
-	return encoding.Strings({
+	return encoding.Strings(
 		new(MuxParamStringer),
 		"param", // process fields in format `param:"name"`
-	})
+	)
 }
 
 // Len returns length of strings source
