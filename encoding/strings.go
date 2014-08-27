@@ -45,16 +45,16 @@ func Strings(stringer Stringer, name string) *StringsCodec {
 
 // Error provides the error implementation for
 // a StringsDecodeError
-func (self *StringsDecodeError) Error() string {
-	return "StringsDecodeError: Can not convert type " + self.FromType + " to type " + self.ToType
+func (e *StringsDecodeError) Error() string {
+	return "StringsDecodeError: Can not convert type " + e.FromType + " to type " + e.ToType
 }
 
 // Decode uses a Stringer to match keys to
 // candidate tags and convert values to the
 // appropriate type
-func (self *StringsCodec) Decode(r *http.Request, candidate interface{}) (err error) {
+func (s *StringsCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 	// Shortcut for no strings
-	if self.stringer.Len(r) == 0 {
+	if s.stringer.Len(r) == 0 {
 		return
 	}
 
@@ -65,11 +65,11 @@ func (self *StringsCodec) Decode(r *http.Request, candidate interface{}) (err er
 	// Iterate candidate fields
 	for i := 0; i < ty.NumField(); i++ {
 		field := ty.Field(i)
-		tag := field.Tag.Get(self.tagName)
+		tag := field.Tag.Get(s.tagName)
 
 		// tag exists
 		if tag != "" {
-			qs := self.stringer.Get(r, tag)
+			qs := s.stringer.Get(r, tag)
 
 			// string exists
 			if qs != "" {

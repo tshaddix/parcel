@@ -55,30 +55,30 @@ func NewFactory() *Factory {
 }
 
 // UseEncoder registers an encoder with the parcel factory
-func (self *Factory) UseEncoder(encoder Encoder) {
-	self.encoders = append(self.encoders, encoder)
+func (f *Factory) UseEncoder(encoder Encoder) {
+	f.encoders = append(f.encoders, encoder)
 }
 
 // UseDecoder registers a decoder with the parcel factory
-func (self *Factory) UseDecoder(decoder Decoder) {
-	self.decoders = append(self.decoders, decoder)
+func (f *Factory) UseDecoder(decoder Decoder) {
+	f.decoders = append(f.decoders, decoder)
 }
 
 // Use is a convience function to register encoders and
 // decoders.
-func (self *Factory) Use(i interface{}) {
+func (f *Factory) Use(i interface{}) {
 	if decoder, ok := i.(Decoder); ok {
-		self.UseDecoder(decoder)
+		f.UseDecoder(decoder)
 	}
 
 	if encoder, ok := i.(Encoder); ok {
-		self.UseEncoder(encoder)
+		f.UseEncoder(encoder)
 	}
 }
 
 // Parcel creates a parcel for the given http context
-func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
-	return &Parcel{RW: rw, R: r, factory: self}
+func (f *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
+	return &Parcel{RW: rw, R: r, factory: f}
 }
 
 // Parcel
@@ -87,11 +87,11 @@ func (self *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 // parent factory. Encoding will cease as soon as an encoder has responded
 // with a `written` result of `true`. If no encoders write to the response,
 // an ResponseNotWrittenError is returned.
-func (self *Parcel) Encode(code int, c Candidate) (err error) {
+func (p *Parcel) Encode(code int, c Candidate) (err error) {
 	var written bool
 
-	for _, encoder := range self.factory.encoders {
-		if written, err = encoder.Encode(self.RW, self.R, c, code); err != nil || written == true {
+	for _, encoder := range p.factory.encoders {
+		if written, err = encoder.Encode(p.RW, p.R, c, code); err != nil || written == true {
 			return
 		}
 	}
@@ -106,9 +106,9 @@ func (self *Parcel) Encode(code int, c Candidate) (err error) {
 // Decode decodes candidate by passing through registered decoders on
 // parent factory. If any decoder returns an error, the chain is stopped
 // and the error is returned
-func (self *Parcel) Decode(c Candidate) (err error) {
-	for _, decoder := range self.factory.decoders {
-		if err = decoder.Decode(self.R, c); err != nil {
+func (p *Parcel) Decode(c Candidate) (err error) {
+	for _, decoder := range p.factory.decoders {
+		if err = decoder.Decode(p.R, c); err != nil {
 			return
 		}
 	}

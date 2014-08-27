@@ -19,7 +19,7 @@ func Json() *JsonCodec {
 // Decode simple wraps "encoding/json" decoder
 // implementation by processing any request with
 // content-type set to "application/json"
-func (_ *JsonCodec) Decode(r *http.Request, candidate interface{}) (err error) {
+func (*JsonCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 
 	if r.Header.Get("Content-Type") == MimeJson && r.ContentLength != 0 {
 		err = json.NewDecoder(r.Body).Decode(candidate)
@@ -30,7 +30,7 @@ func (_ *JsonCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 
 // Encode will encode the candidate as a JSON response given
 // the request content-type is set to "application/json"
-func (_ *JsonCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
+func (*JsonCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
 	if r.Header.Get("Content-Type") == MimeJson {
 		written = true
 
