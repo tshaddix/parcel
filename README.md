@@ -1,9 +1,9 @@
-go-parcel
-=========
+parcel
+======
 
 Encoding and decoding ease for golang webapps. Out of the box support for JSON, XML, and Query Strings.
 
-This package aims to provide a middleware inspired codec system for golang webapps. Using `go-parcel` involves creating a parcel factory and then using a parcel built from an `http.ResponseWriter` and `*http.Request`.
+This package aims to provide a middleware inspired codec system for golang webapps. Using `parcel` involves creating a parcel factory and then using a parcel built from an `http.ResponseWriter` and `*http.Request`.
 
 ## Factory
 
@@ -73,7 +73,7 @@ Errors work the same as the decoding process: An error will be returned "raw" fr
 
 ## In the Box
 
-Included with `go-parcel` are a few codecs which should be useful. You can pick and choose which codecs to use/extend. They can be found under `go-parcel/encoding`.
+Included with `parcel` are a few codecs which should be useful. You can pick and choose which codecs to use/extend. They can be found under `parcel/encoding`.
 
 ### JsonCodec
 
@@ -108,7 +108,7 @@ type myStruct struct {
 ```
 
 ### StringsCodec
-`StringsCodec` is a simple codec that uses reflection to manipulate a string source into a target destination property and type. Refer to the [godoc](https://godoc.org/github.com/tshaddix/go-parcel) for more information on how to use this codec (or look at the example below).
+`StringsCodec` is a simple codec that uses reflection to manipulate a string source into a target destination property and type. Refer to the [godoc](https://godoc.org/github.com/tshaddix/parcel) for more information on how to use this codec (or look at the example below).
 
 ## Adding a Codec
 
@@ -120,8 +120,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/tshaddix/go-parcel"
-	"github.com/tshaddix/go-parcel/encoding"
+	"github.com/tshaddix/parcel"
+	"github.com/tshaddix/parcel/encoding"
 )
 
 // decoding.Stringer implementation
@@ -152,7 +152,7 @@ factory.Use(MuxParams())
 
 ```
 
-For more advanced needs of building a codec, refer to the [godoc](https://godoc.org/github.com/tshaddix/go-parcel).
+For more advanced needs of building a codec, refer to the [godoc](https://godoc.org/github.com/tshaddix/parcel).
 
 ## TODO
 - Comments on decoding/encoding packages

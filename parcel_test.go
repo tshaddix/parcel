@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tshaddix/go-parcel/encoding"
+	"github.com/tshaddix/parcel/encoding"
 )
 
 type (
