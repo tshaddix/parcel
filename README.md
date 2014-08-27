@@ -31,7 +31,7 @@ factory.Use(encoding.Xml())
 
 The `Use()` function will register any decoders or encoders as part of the middleware chain. The middleware will run in the order registered when processing a request or writing a response.
 
-Some of these codecs (such as `JsonCodec` and `XmlCodec`) will register both a decoder and an encoder when using `Use()`. To register just an encoder or a decoder, you can use `UseDecoder()` or `UseEncoder`.
+Some of these codecs (such as `JsonCodec` and `XmlCodec`) will register both a decoder and an encoder when using `Use()`. To register just an encoder or a decoder, you can use `UseDecoder()` or `UseEncoder()`.
 
 ```go
 // Just register the JSON encoder in the encoder chain
@@ -93,10 +93,18 @@ xmlCodec := encoding.Xml()
 
 ### QueryCodec (a configured StringsCodec)
 
-`QueryCodec` is just a configured `StringsCodec` (see below) to process query strings into a struct. Use the ` `query:""` ` tag to indicate which fields should be processed by the codec. This codec only includes a decoder implementation.
+`QueryCodec` is just a configured `StringsCodec` (see below) to process query strings into a struct. This codec only includes a decoder implementation.
 
 ```go
 queryCodec := encoding.Query()
+```
+
+Use the `query` tag to indicate which fields should be processed by the query codec on your structs. Fields without a query tag will be ignored by this codec.
+
+```go
+type myStruct struct {
+	Token `query:"token"`
+}
 ```
 
 ### StringsCodec
