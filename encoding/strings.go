@@ -9,19 +9,18 @@ import (
 
 type (
 	// Stringer implementations should
-	// provide a way to fetch the length
-	// of the string source and get a string
-	// by a key
+	// provide a way to fetch source strings
+	// as a map (key, value)
 	Stringer interface {
-		Get(*http.Request, string) string
 		Len(*http.Request) int
+		Get(*http.Request, string) string
 	}
 
 	// StringsCodec is a parcel.Decoder
 	// implementation that decodes from a
 	// string source
 	StringsCodec struct {
-		stringer Stringer
+		sr Stringer
 
 		// tagName indicates the tag value
 		// used to find matching keys
@@ -38,9 +37,9 @@ type (
 	}
 )
 
-// Strings returns a new configured Strings
-func Strings(stringer Stringer, name string) *StringsCodec {
-	return &StringsCodec{stringer, name}
+// Strings returns a new configured StringsCodec
+func Strings(s Stringer, name string) *StringsCodec {
+	return &StringsCodec{s, name}
 }
 
 // Error provides the error implementation for
@@ -49,13 +48,13 @@ func (e *StringsDecodeError) Error() string {
 	return "StringsDecodeError: Can not convert type " + e.FromType + " to type " + e.ToType
 }
 
-// Decode uses a Stringer to match keys to
+// Decode uses a StringMapper to match keys to
 // candidate tags and convert values to the
 // appropriate type
-func (s *StringsCodec) Decode(r *http.Request, candidate interface{}) (err error) {
+func (s *StringsCodec) Decode(r *http.Request, candidate interface{}) error {
 	// Shortcut for no strings
-	if s.stringer.Len(r) == 0 {
-		return
+	if s.sr.Len(r) == 0 {
+		return nil
 	}
 
 	// Value and type of candidate
@@ -67,54 +66,58 @@ func (s *StringsCodec) Decode(r *http.Request, candidate interface{}) (err error
 		field := ty.Field(i)
 		tag := field.Tag.Get(s.tagName)
 
-		// tag exists
-		if tag != "" {
-			qs := s.stringer.Get(r, tag)
+		// tag does not exists
+		if tag == "" {
+			continue
+		}
 
-			// string exists
-			if qs != "" {
-				if value.Field(i).CanSet() {
+		qs := s.sr.Get(r, tag)
 
-					// Do conversion
+		// stringer value does not exist
+		if qs == "" {
+			continue
+		}
 
-					kind := field.Type.Kind()
+		// value can not be set
+		if !value.Field(i).CanSet() {
+			continue
+		}
 
-					if kind == reflect.Int8 || kind == reflect.Int16 || kind == reflect.Int32 || kind == reflect.Int64 || kind == reflect.Int {
-						v, e := strconv.ParseInt(qs, 10, 64)
+		// Do conversion
 
-						if e != nil {
-							err = &StringsDecodeError{FromType: "string", ToType: "integer"}
-							return
-						}
+		kind := field.Type.Kind()
 
-						value.Field(i).SetInt(v)
-					} else if kind == reflect.Float32 || kind == reflect.Float64 {
-						v, e := strconv.ParseFloat(qs, 10)
+		switch kind {
+		case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
+			v, e := strconv.ParseInt(qs, 10, 64)
 
-						if e != nil {
-							err = &StringsDecodeError{FromType: "string", ToType: "floating point"}
-							return
-						}
-
-						value.Field(i).SetFloat(v)
-					} else if kind == reflect.String {
-						value.Field(i).SetString(qs)
-					} else if kind == reflect.Bool {
-						v := strings.ToLower(qs)
-
-						if v == "true" {
-							value.Field(i).SetBool(true)
-						} else {
-							value.Field(i).SetBool(false)
-						}
-					} else {
-						err = &StringsDecodeError{FromType: "string", ToType: field.Type.Name()}
-						return
-					}
-				}
+			if e != nil {
+				return &StringsDecodeError{FromType: "string", ToType: "integer"}
 			}
+
+			value.Field(i).SetInt(v)
+		case reflect.Float32, reflect.Float64:
+			v, e := strconv.ParseFloat(qs, 10)
+
+			if e != nil {
+				return &StringsDecodeError{FromType: "string", ToType: "floating point"}
+			}
+
+			value.Field(i).SetFloat(v)
+		case reflect.String:
+			value.Field(i).SetString(qs)
+		case reflect.Bool:
+			v := strings.ToLower(qs)
+
+			if v == "true" {
+				value.Field(i).SetBool(true)
+			} else {
+				value.Field(i).SetBool(false)
+			}
+		default:
+			return &StringsDecodeError{FromType: "string", ToType: field.Type.Name()}
 		}
 	}
 
-	return
+	return nil
 }

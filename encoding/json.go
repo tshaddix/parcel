@@ -2,26 +2,33 @@ package encoding
 
 import (
 	"encoding/json"
+	"mime"
 	"net/http"
 )
 
 type (
-	// JsonCodec is a JSON implementation
+	// JSONCodec is a JSON implementation
 	// of parcel.Decoder and parcel.Encoder
-	JsonCodec struct{}
+	JSONCodec struct{}
 )
 
-// Json returns a new Json Encoder/Decoder
-func Json() *JsonCodec {
-	return new(JsonCodec)
+// JSON returns a new Json Encoder/Decoder
+func JSON() *JSONCodec {
+	return new(JSONCodec)
 }
 
 // Decode simple wraps "encoding/json" decoder
 // implementation by processing any request with
 // content-type set to "application/json"
-func (*JsonCodec) Decode(r *http.Request, candidate interface{}) (err error) {
+func (*JSONCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 
-	if r.Header.Get("Content-Type") == MimeJson && r.ContentLength != 0 {
+	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
+
+	if err != nil {
+		return
+	}
+
+	if mt == MimeJSON && r.ContentLength != 0 {
 		err = json.NewDecoder(r.Body).Decode(candidate)
 	}
 
@@ -30,16 +37,24 @@ func (*JsonCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 
 // Encode will encode the candidate as a JSON response given
 // the request content-type is set to "application/json"
-func (*JsonCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
-	if r.Header.Get("Content-Type") == MimeJson {
-		written = true
+func (*JSONCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
+	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 
-		rw.Header().Set("Content-Type", MimeJson)
-		rw.WriteHeader(code)
-
-		encoder := json.NewEncoder(rw)
-		err = encoder.Encode(candidate)
+	if err != nil {
+		return
 	}
+
+	if mt != MimeJSON {
+		return
+	}
+
+	written = true
+
+	rw.Header().Set("Content-Type", MimeJSON)
+	rw.WriteHeader(code)
+
+	encoder := json.NewEncoder(rw)
+	err = encoder.Encode(candidate)
 
 	return
 }

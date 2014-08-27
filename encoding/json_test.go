@@ -39,7 +39,7 @@ func TestJsonDecoder(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/json")
 
-	decoder := Json()
+	decoder := JSON()
 
 	candidate := new(TestJson)
 

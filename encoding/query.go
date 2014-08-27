@@ -5,8 +5,8 @@ import (
 )
 
 type (
-	// QueryStringer is an implementation
-	// strings.Stringer for query strings
+	// QueryStringer is an implementation of
+	// Stringer for query strings
 	QueryStringer struct{}
 )
 
@@ -22,7 +22,7 @@ func (*QueryStringer) Get(r *http.Request, name string) string {
 	return r.URL.Query().Get(name)
 }
 
-// QueryDecode returns a StringsCodec configured
+// Query returns a StringsCodec configured
 // with a QueryStringer and tag-name "query"
 func Query() *StringsCodec {
 	return Strings(new(QueryStringer), "query")

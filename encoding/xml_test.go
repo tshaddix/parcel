@@ -39,7 +39,7 @@ func TestXmlDecoder(t *testing.T) {
 
 	r.Header.Set("Content-Type", "application/xml")
 
-	decoder := Xml()
+	decoder := XML()
 
 	candidate := new(TestXml)
 

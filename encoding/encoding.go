@@ -5,7 +5,7 @@ package encoding
 
 // MIME types
 const (
-	MimeJson = "application/json"
-	MimeXml  = "application/xml"
-	MimeXml2 = "text/xml"
+	MimeJSON = "application/json"
+	MimeXML  = "application/xml"
+	MimeXML2 = "text/xml"
 )

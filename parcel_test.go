@@ -22,8 +22,8 @@ type (
 
 func TestDecoding(t *testing.T) {
 	factory := NewFactory()
-	factory.Use(encoding.Json())
-	factory.Use(encoding.Xml())
+	factory.Use(encoding.JSON())
+	factory.Use(encoding.XML())
 	factory.Use(encoding.Query())
 
 	jsonReader, err := os.Open("test/test.json")

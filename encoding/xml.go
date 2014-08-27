@@ -2,35 +2,42 @@ package encoding
 
 import (
 	"encoding/xml"
+	"mime"
 	"net/http"
 )
 
 type (
-	// XmlEncoder is a XML implementation
+	// XMLCodec is a XML implementation
 	// of parcel.Encoder and parcel.Decoder
-	XmlCodec struct{}
+	XMLCodec struct{}
 )
 
-// Xml returns a new XmlCodec
-func Xml() *XmlCodec {
-	return new(XmlCodec)
+// XML returns a new XMLCodec
+func XML() *XMLCodec {
+	return new(XMLCodec)
 }
 
 // Encode will encode the candidate as a XML response
 // given the request content-type is set to "application/xml"
 // or "text/xml"
-func (*XmlCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
-	ct := r.Header.Get("Content-Type")
+func (*XMLCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
+	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 
-	if ct == MimeXml || ct == MimeXml2 {
-		written = true
-
-		rw.Header().Set("Content-Type", ct)
-		rw.WriteHeader(code)
-
-		encoder := xml.NewEncoder(rw)
-		err = encoder.Encode(candidate)
+	if err != nil {
+		return
 	}
+
+	if mt != MimeXML && mt != MimeXML2 {
+		return
+	}
+
+	written = true
+
+	rw.Header().Set("Content-Type", mt)
+	rw.WriteHeader(code)
+
+	encoder := xml.NewEncoder(rw)
+	err = encoder.Encode(candidate)
 
 	return
 }
@@ -38,12 +45,18 @@ func (*XmlCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate inter
 // Decode simply wraps "encoding/xml" decoder
 // implementation by processing any request with
 // content-type set to "application/xml" or "text/xml"
-func (*XmlCodec) Decode(r *http.Request, candidate interface{}) (err error) {
-	ct := r.Header.Get("Content-Type")
+func (*XMLCodec) Decode(r *http.Request, candidate interface{}) (err error) {
+	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 
-	if (ct == MimeXml || ct == MimeXml2) && r.ContentLength != 0 {
-		err = xml.NewDecoder(r.Body).Decode(candidate)
+	if err != nil {
+		return
 	}
+
+	if (mt != MimeXML && mt != MimeXML2) || r.ContentLength == 0 {
+		return
+	}
+
+	err = xml.NewDecoder(r.Body).Decode(candidate)
 
 	return
 }

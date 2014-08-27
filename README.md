@@ -25,8 +25,8 @@ factory = parcel.NewFactory()
 // Notice that the Query codec only provides a decoder,
 // so it will not be added to response chain
 factory.Use(encoding.Query())
-factory.Use(encoding.Json())
-factory.Use(encoding.Xml())
+factory.Use(encoding.JSON())
+factory.Use(encoding.XML())
 ```
 
 The `Use()` function will register any decoders or encoders as part of the middleware chain. The middleware will run in the order registered when processing a request or writing a response.
@@ -35,7 +35,7 @@ Some of these codecs (such as `JsonCodec` and `XmlCodec`) will register both a d
 
 ```go
 // Just register the JSON encoder in the encoder chain
-factory.UseEncoder(encoding.Json())
+factory.UseEncoder(encoding.JSON())
 ```
 
 ## Parcel
@@ -75,20 +75,20 @@ Errors work the same as the decoding process: An error will be returned "raw" fr
 
 Included with `parcel` are a few codecs which should be useful. You can pick and choose which codecs to use/extend. They can be found under `parcel/encoding`.
 
-### JsonCodec
+### JSONCodec
 
-`JsonCodec` uses the `encoding/json` package to encode and/or decode JSON bodies. The `JsonCodec` uses the `Content-Type` header to determine whether to encode or decode a given parcel. Only request indicating `application/json` as the content type will be processed.
+`JSONCodec` uses the `encoding/json` package to encode and/or decode JSON bodies. The `JSONCodec` uses the `Content-Type` header to determine whether to encode or decode a given parcel. Only request indicating `application/json` as the content type will be processed.
 
 ```go
-jsonCodec := encoding.Json()
+jsonCodec := encoding.JSON()
 ```
 
-### XmlCodec
+### XMLCodec
 
-`XmlCodec` acts much like the JSON version by wrapping the `encoding/xml` package. Requests indicating the content type of `application/xml` or `text/xml` will be the only requests processed by the codec.
+`XMLCodec` acts much like the JSON version by wrapping the `encoding/xml` package. Requests indicating the content type of `application/xml` or `text/xml` will be the only requests processed by the codec.
 
 ```go
-xmlCodec := encoding.Xml()
+xmlCodec := encoding.XML()
 ```
 
 ### QueryCodec (a configured StringsCodec)

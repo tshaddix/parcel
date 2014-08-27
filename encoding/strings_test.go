@@ -56,4 +56,5 @@ func TestStringsDecoder(t *testing.T) {
 	if candidate.Name != "Tyler" {
 		t.Fatal("Name", candidate.Name)
 	}
+
 }
