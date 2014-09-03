@@ -72,7 +72,7 @@ func (q *QueryCodec) Decode(r *http.Request, candidate interface{}) error {
 
 			for a, entry := range arr {
 				if err := StrSet(field.Type.Elem().Kind(), entry, sl.Index(a)); err != nil {
-					return &QueryTypeError{field.Type.Elem().Name()}
+					return &QueryTypeError{field.Type.Name()}
 				}
 			}
 
