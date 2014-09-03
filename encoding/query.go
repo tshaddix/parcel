@@ -18,7 +18,6 @@ type (
 	QueryTypeError struct {
 		FromType string
 		ToType   string
-		Path     string
 	}
 )
 
