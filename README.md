@@ -93,7 +93,7 @@ xmlCodec := encoding.XML()
 
 ### QueryCodec (a configured StringsCodec)
 
-`QueryCodec` is just a configured `StringsCodec` (see below) to process query strings into a struct. This codec only includes a decoder implementation.
+`QueryCodec` configures a decoder implementation that parses query strings from a request.
 
 ```go
 queryCodec := encoding.Query()
@@ -103,7 +103,8 @@ Use the `query` tag to indicate which fields should be processed by the query co
 
 ```go
 type myStruct struct {
-	Token `query:"token"`
+	Token string  `query:"token"`
+	Ids   []int64 `query:"id"` //?id=1&id=2&id=3
 }
 ```
 
@@ -112,7 +113,7 @@ type myStruct struct {
 
 ## Adding a Codec
 
-Here is an example using [gorilla mux](https://github.com/gorilla/mux) params and the helpful `StringsCodec` (used internally in `QueryCodec`):
+Here is an example using [gorilla mux](https://github.com/gorilla/mux) params and the helpful `StringsCodec`:
 
 ```go
 
