@@ -91,7 +91,7 @@ jsonCodec := encoding.JSON()
 xmlCodec := encoding.XML()
 ```
 
-### QueryCodec (a configured StringsCodec)
+### QueryCodec
 
 `QueryCodec` configures a decoder implementation that parses query strings from a request.
 
