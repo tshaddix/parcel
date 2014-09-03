@@ -108,54 +108,10 @@ type myStruct struct {
 }
 ```
 
-### StringsCodec
-`StringsCodec` is a simple codec that uses reflection to manipulate a string source into a target destination property and type. Refer to the [godoc](https://godoc.org/github.com/tshaddix/parcel) for more information on how to use this codec (or look at the example below).
-
 ## Adding a Codec
-
-Here is an example using [gorilla mux](https://github.com/gorilla/mux) params and the helpful `StringsCodec`:
-
-```go
-
-import (
-	"net/http"
-
-	"github.com/gorilla/mux"
-	"github.com/tshaddix/parcel"
-	"github.com/tshaddix/parcel/encoding"
-)
-
-// decoding.Stringer implementation
-type MuxParamStringer struct {}
-
-// MuxParams is a shortcut for building a param
-// decoder off of the strings decoder 
-func MuxParams() *encoding.StringsCodec {
-	return encoding.Strings(
-		new(MuxParamStringer),
-		"param", // process fields in format `param:"name"`
-	)
-}
-
-// Len returns length of strings source
-func (self *MuxParamStringer) Len(r *http.Request) int {
-	return len(mux.Vars(r))
-}
-
-// Get returns the string value of a named parameter
-func (self *MuxParamStringer) Get(r *http.Request, name string) string {
-	return mux.Vars(r)[name]
-}
-
-// Later on
-
-factory.Use(MuxParams())
-
-```
 
 For more advanced needs of building a codec, refer to the [godoc](https://godoc.org/github.com/tshaddix/parcel).
 
 ## TODO
-- Comments on decoding/encoding packages
 - Update README with better examples and abilities.
 - Add more test cases (encoding, bad cases, etc)
