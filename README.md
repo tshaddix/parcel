@@ -112,6 +112,8 @@ type myStruct struct {
 
 For more advanced needs of building a codec, refer to the [godoc](https://godoc.org/github.com/tshaddix/parcel).
 
+Here is an [example](https://gist.github.com/tshaddix/4719b13c9d74f9312cba) of a param decoder for [Gorilla Mux](https://github.com/gorilla/mux).
+
 ## TODO
 - Update README with better examples and abilities.
 - Add more test cases (encoding, bad cases, etc)
