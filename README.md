@@ -52,7 +52,7 @@ func myHandler(rw http.ResponseWriter, r *http.Request) {
 
 ### Decode(interface{}) error
 
-`Decode` takes an interface, and runs all registered decoders on the factory, in order. It is important to note that if two decoders have a reference to the same property, the last decoder to run will be the final assignement of the property.
+`Decode` takes an interface, and runs all registered decoders on the factory, in order. It is important to note that if two decoders have a reference to the same property, the last decoder to run will be the final assignment of the property.
 
 ```go
 // Run decoders and populate personStruct
