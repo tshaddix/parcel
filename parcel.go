@@ -82,7 +82,7 @@ func (f *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 }
 
 // NewCodec is an alias to Parcel()
-func (f *Factory) NewCodec(rw htpt.ResponseWriter, r *http.Request) *Parcel {
+func (f *Factory) NewCodec(rw http.ResponseWriter, r *http.Request) *Parcel {
 	return f.Parcel(rw, r)
 }
 
