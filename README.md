@@ -73,7 +73,7 @@ Errors work the same as the decoding process: An error will be returned "raw" fr
 
 ## Content Negotiation
 
-This package will attempt to encode responses using basic content negotiation tactics. Using the request "Accept" header, the package will first try to match encoders that provide encoding capabilities for this header. If none are found, the package will attempt to respond in the same content type used in a `POST`, `PUT`, or `PATCH` request. If the content type can not be obtained through this technique, it will use the default encoder set through `factory.UseDefaultEncoder(encoder)`. If the default encoder is not set, a `ResponseNotWrittenError` is returned..
+This package will attempt to encode responses using basic content negotiation tactics. Using the request `Accept` header, the package will first try to match encoders that provide encoding capabilities for media types specified in this header. If none are found, the package will attempt to respond in the same `Content-Type` used in a `POST`, `PUT`, or `PATCH` request. If the content type can not be obtained through this technique, it will use the default encoder set through `factory.UseDefaultEncoder(encoder)`. If the default encoder is not set, a `ResponseNotWrittenError` is returned. It would be wise to include a middleware in your routing that checks and validates `Accepts` and `Content-Type` headers for your app.
 
 ## In the Box
 
