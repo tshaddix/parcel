@@ -71,6 +71,10 @@ err := p.Encode(http.StatusOK, &personStruct)
 
 Errors work the same as the decoding process: An error will be returned "raw" from the encoder and the processing chain will be halted.
 
+## Content Negotiation
+
+This package will attempt to encode responses using basic content negotiation tactics. Using the request "Accept" header, the package will first try to match encoders that provide encoding capabilities for this header. If none are found, the package will attempt to respond in the same content type used in a `POST`, `PUT`, or `PATCH` request. If the content type can not be obtained through this technique, it will use the default encoder set through `factory.UseDefaultEncoder(encoder)`. If the default encoder is not set, a `ResponseNotWrittenError` is returned..
+
 ## In the Box
 
 Included with `parcel` are a few codecs which should be useful. You can pick and choose which codecs to use/extend. They can be found under `parcel/encoding`.

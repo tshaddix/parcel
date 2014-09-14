@@ -5,7 +5,9 @@ package parcel
 
 import (
 	"errors"
+	"mime"
 	"net/http"
+	"strings"
 )
 
 type (
@@ -19,10 +21,10 @@ type (
 	}
 
 	// Encoder implementations should encode values from a candidate
-	// to a ResponseWriter. A bool should be returned to indicate whether
-	// the encoder wrote a response
+	// to a ResponseWriter.
 	Encoder interface {
-		Encode(http.ResponseWriter, *http.Request, interface{}, int) (bool, error)
+		Encodes() []string
+		Encode(http.ResponseWriter, interface{}, int) error
 	}
 
 	// Parcel is a simple reference structure that
@@ -36,8 +38,9 @@ type (
 	// Factory stores the implementation details of available
 	// and configured encoders and decoders
 	Factory struct {
-		encoders []Encoder
-		decoders []Decoder
+		defaultEncoder Encoder
+		encoders       map[string]Encoder
+		decoders       []Decoder
 	}
 )
 
@@ -49,14 +52,21 @@ var (
 // NewFactory creates a new Parcel factory
 func NewFactory() *Factory {
 	f := new(Factory)
-	f.encoders = make([]Encoder, 0)
+	f.encoders = make(map[string]Encoder)
 	f.decoders = make([]Decoder, 0)
 	return f
 }
 
+// UseDefaultEncoder will set an encoder as a fallback if no Accept header is set
+func (f *Factory) UseDefaultEncoder(encoder Encoder) {
+	f.defaultEncoder = encoder
+}
+
 // UseEncoder registers an encoder with the parcel factory
 func (f *Factory) UseEncoder(encoder Encoder) {
-	f.encoders = append(f.encoders, encoder)
+	for _, encodes := range encoder.Encodes() {
+		f.encoders[encodes] = encoder
+	}
 }
 
 // UseDecoder registers a decoder with the parcel factory
@@ -92,20 +102,36 @@ func (f *Factory) NewCodec(rw http.ResponseWriter, r *http.Request) *Parcel {
 // parent factory. Encoding will cease as soon as an encoder has responded
 // with a `written` result of `true`. If no encoders write to the response,
 // an ResponseNotWrittenError is returned.
-func (p *Parcel) Encode(code int, c Candidate) (err error) {
-	var written bool
+func (p *Parcel) Encode(code int, c Candidate) error {
+	// Content negotiation
+	accepts := parseAccept(p.R.Header.Get("Accept"))
 
-	for _, encoder := range p.factory.encoders {
-		if written, err = encoder.Encode(p.RW, p.R, c, code); err != nil || written == true {
-			return
+	if len(accepts) == 0 {
+		// Try content-type retrieval
+		if p.R.Method == "POST" || p.R.Method == "PUT" || p.R.Method == "PATCH" {
+			mt, _, err := mime.ParseMediaType(p.R.Header.Get("Content-Type"))
+
+			if err != nil {
+				return err
+			}
+
+			accepts = append(accepts, mt)
 		}
 	}
 
-	if !written {
-		err = ResponseNotWrittenError
+	for _, a := range accepts {
+		accepted := p.factory.encoders[a]
+
+		if accepted != nil {
+			return accepted.Encode(p.RW, c, code)
+		}
 	}
 
-	return
+	if p.factory.defaultEncoder != nil {
+		return p.factory.defaultEncoder.Encode(p.RW, c, code)
+	} else {
+		return ResponseNotWrittenError
+	}
 }
 
 // Decode decodes candidate by passing through registered decoders on
@@ -119,4 +145,18 @@ func (p *Parcel) Decode(c Candidate) (err error) {
 	}
 
 	return
+}
+
+// parseAccept will parce and accept header and return the accepted mimetypes
+func parseAccept(accept string) []string {
+	parts := strings.Split(accept, ",")
+	for i, part := range parts {
+		index := strings.IndexByte(part, ';')
+		if index >= 0 {
+			part = part[0:index]
+		}
+		part = strings.TrimSpace(part)
+		parts[i] = part
+	}
+	return parts
 }

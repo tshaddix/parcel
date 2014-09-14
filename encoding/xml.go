@@ -20,20 +20,8 @@ func XML() *XMLCodec {
 // Encode will encode the candidate as a XML response
 // given the request content-type is set to "application/xml"
 // or "text/xml"
-func (*XMLCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
-	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
-
-	if err != nil {
-		return
-	}
-
-	if mt != MimeXML && mt != MimeXML2 {
-		return
-	}
-
-	written = true
-
-	rw.Header().Set("Content-Type", mt)
+func (*XMLCodec) Encode(rw http.ResponseWriter, candidate interface{}, code int) (err error) {
+	rw.Header().Set("Content-Type", MimeXML)
 	rw.WriteHeader(code)
 
 	encoder := xml.NewEncoder(rw)
@@ -46,17 +34,26 @@ func (*XMLCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate inter
 // implementation by processing any request with
 // content-type set to "application/xml" or "text/xml"
 func (*XMLCodec) Decode(r *http.Request, candidate interface{}) (err error) {
+	if !(r.Method == "POST" || r.Method == "PUT" || r.Method == "PATCH") {
+		return
+	}
+
 	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 
 	if err != nil {
 		return
 	}
 
-	if (mt != MimeXML && mt != MimeXML2) || r.ContentLength == 0 {
+	if mt != MimeXML && mt != MimeXML2 {
 		return
 	}
 
 	err = xml.NewDecoder(r.Body).Decode(candidate)
 
 	return
+}
+
+// Encodes provides the XML media types
+func (*XMLCodec) Encodes() []string {
+	return []string{MimeXML, MimeXML2}
 }

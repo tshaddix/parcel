@@ -22,13 +22,17 @@ func JSON() *JSONCodec {
 // content-type set to "application/json"
 func (*JSONCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 
+	if !(r.Method == "POST" || r.Method == "PUT" || r.Method == "PATCH") {
+		return
+	}
+
 	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
 
 	if err != nil {
 		return
 	}
 
-	if mt == MimeJSON && r.ContentLength != 0 {
+	if mt == MimeJSON {
 		err = json.NewDecoder(r.Body).Decode(candidate)
 	}
 
@@ -37,19 +41,7 @@ func (*JSONCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 
 // Encode will encode the candidate as a JSON response given
 // the request content-type is set to "application/json"
-func (*JSONCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate interface{}, code int) (written bool, err error) {
-	mt, _, err := mime.ParseMediaType(r.Header.Get("Content-Type"))
-
-	if err != nil {
-		return
-	}
-
-	if mt != MimeJSON {
-		return
-	}
-
-	written = true
-
+func (*JSONCodec) Encode(rw http.ResponseWriter, candidate interface{}, code int) (err error) {
 	rw.Header().Set("Content-Type", MimeJSON)
 	rw.WriteHeader(code)
 
@@ -57,4 +49,9 @@ func (*JSONCodec) Encode(rw http.ResponseWriter, r *http.Request, candidate inte
 	err = encoder.Encode(candidate)
 
 	return
+}
+
+// Encodes provides the JSON media type
+func (*JSONCodec) Encodes() []string {
+	return []string{MimeJSON}
 }
