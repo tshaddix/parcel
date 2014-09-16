@@ -92,11 +92,6 @@ func (f *Factory) Parcel(rw http.ResponseWriter, r *http.Request) *Parcel {
 	return &Parcel{RW: rw, R: r, factory: f}
 }
 
-// NewCodec is an alias to Parcel()
-func (f *Factory) NewCodec(rw http.ResponseWriter, r *http.Request) *Parcel {
-	return f.Parcel(rw, r)
-}
-
 // Parcel
 
 // Encode encodes candidate by passing through registered encoders on
