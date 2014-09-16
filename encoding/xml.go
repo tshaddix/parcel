@@ -17,19 +17,6 @@ func XML() *XMLCodec {
 	return new(XMLCodec)
 }
 
-// Encode will encode the candidate as a XML response
-// given the request content-type is set to "application/xml"
-// or "text/xml"
-func (*XMLCodec) Encode(rw http.ResponseWriter, candidate interface{}, code int) (err error) {
-	rw.Header().Set("Content-Type", MimeXML)
-	rw.WriteHeader(code)
-
-	encoder := xml.NewEncoder(rw)
-	err = encoder.Encode(candidate)
-
-	return
-}
-
 // Decode simply wraps "encoding/xml" decoder
 // implementation by processing any request with
 // content-type set to "application/xml" or "text/xml"
@@ -53,7 +40,21 @@ func (*XMLCodec) Decode(r *http.Request, candidate interface{}) (err error) {
 	return
 }
 
-// Encodes provides the XML media types
+// Encode will encode the candidate as a XML response
+// given the request content-type is set to "application/xml"
+// or "text/xml"
+func (*XMLCodec) Encode(rw http.ResponseWriter, candidate interface{}) (err error) {
+
+	encoder := xml.NewEncoder(rw)
+	err = encoder.Encode(candidate)
+
+	return
+}
+
+func (*XMLCodec) ContentType() string {
+	return MimeXML
+}
+
 func (*XMLCodec) Encodes() []string {
 	return []string{MimeXML, MimeXML2}
 }

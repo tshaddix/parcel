@@ -24,7 +24,8 @@ type (
 	// to a ResponseWriter.
 	Encoder interface {
 		Encodes() []string
-		Encode(http.ResponseWriter, interface{}, int) error
+		ContentType() string
+		Encode(http.ResponseWriter, interface{}) error
 	}
 
 	// Parcel is a simple reference structure that
@@ -103,32 +104,12 @@ func (f *Factory) NewCodec(rw http.ResponseWriter, r *http.Request) *Parcel {
 // with a `written` result of `true`. If no encoders write to the response,
 // an ResponseNotWrittenError is returned.
 func (p *Parcel) Encode(code int, c Candidate) error {
-	// Content negotiation
-	accepts := parseAccept(p.R.Header.Get("Accept"))
+	encoder := p.GetEncoder()
 
-	if len(accepts) == 0 {
-		// Try content-type retrieval
-		if p.R.Method == "POST" || p.R.Method == "PUT" || p.R.Method == "PATCH" {
-			mt, _, err := mime.ParseMediaType(p.R.Header.Get("Content-Type"))
-
-			if err != nil {
-				return err
-			}
-
-			accepts = append(accepts, mt)
-		}
-	}
-
-	for _, a := range accepts {
-		accepted := p.factory.encoders[a]
-
-		if accepted != nil {
-			return accepted.Encode(p.RW, c, code)
-		}
-	}
-
-	if p.factory.defaultEncoder != nil {
-		return p.factory.defaultEncoder.Encode(p.RW, c, code)
+	if encoder != nil {
+		p.RW.Header().Set("Content-Type", encoder.ContentType())
+		p.RW.WriteHeader(code)
+		return encoder.Encode(p.RW, c)
 	} else {
 		return ResponseNotWrittenError
 	}
@@ -145,6 +126,38 @@ func (p *Parcel) Decode(c Candidate) (err error) {
 	}
 
 	return
+}
+
+// GetEncoder will return the encoder that will be used for encoding
+// based on parcel's content negotiation rules
+func (p *Parcel) GetEncoder() Encoder {
+	// Content negotiation
+	accepts := parseAccept(p.R.Header.Get("Accept"))
+
+	if len(accepts) == 0 {
+		// Try content-type retrieval
+		if p.R.Method == "POST" || p.R.Method == "PUT" || p.R.Method == "PATCH" {
+			mt, _, err := mime.ParseMediaType(p.R.Header.Get("Content-Type"))
+
+			if err == nil {
+				accepts = append(accepts, mt)
+			}
+		}
+	}
+
+	for _, a := range accepts {
+		accepted := p.factory.encoders[a]
+
+		if accepted != nil {
+			return accepted
+		}
+	}
+
+	if p.factory.defaultEncoder != nil {
+		return p.factory.defaultEncoder
+	} else {
+		return nil
+	}
 }
 
 // parseAccept will parce and accept header and return the accepted mimetypes
